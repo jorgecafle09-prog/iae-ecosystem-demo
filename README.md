@@ -1,2 +1,2 @@
-# EmprendeIAE Integrated Class Version
-Azure-hosted classroom prototype with application intake, Admin input, People Database, Data Warehouse, dashboard analytics and Entrepreneur Directory. Application data is stored in browser localStorage for the classroom prototype.
+# EmprendeIAE Ecosystem Full Classroom Version
+Preserves the pre-integration Ecosystem experience (directory, favorites, resources, capital/support, events, matching, admin metrics, freshness, programs, people database and raw data warehouse), adds founders application intake and browser Excel import.

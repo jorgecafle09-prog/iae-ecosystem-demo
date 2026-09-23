@@ -1,2 +1,5 @@
-# EmprendeIAE Final Integrated Classroom Package
-Includes full Ecosystem, screenshot-based Founders pre-submission journey, Excel import, Admin AI Filter I, metrics, records, recommendations, resources, support and events. Replace the GitHub `hub` folder with this package `hub` folder. Existing `api` and workflow can remain.
+# EmprendeIAE Final Integrated Classroom Package v2
+
+Includes full Ecosystem, Founders pre-submission journey, Excel import, AI Filter I, robust EmprendeIAE header branding, and Test Data Management controls.
+
+Admin > Test Data supports deleting all website applicants, restarting the Founders application flow, and restoring the original 24 NAVES records. Registrations also include an individual Delete action for website test applicants.

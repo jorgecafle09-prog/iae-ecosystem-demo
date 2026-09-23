@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EmprendeIAE · Team console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1E22AA">
+<link rel="stylesheet" href="/ui-kit.css">
+<script>window.EIAE_API_ENABLED = true;</script>
+<script src="/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#101828}
+a{color:#1E22AA}a:hover{color:#181C8C}
+</style>
+</helmet>
+<div class="ei-root" style="width: 100%; min-height: 100vh; box-sizing: border-box; display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: start; background: var(--surface-sunken);">
+
+<aside style="position: sticky; top: 0; height: 100vh; overflow-y: auto; box-sizing: border-box; background: var(--surface); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 20px; padding: 20px 16px;">
+<div style="display: flex; flex-direction: column; line-height: 1.1;"><b style="font-family: var(--font-serif); font-size: 20px;">EmprendeIAE</b><small class="ei-muted" style="font-size: 11px; margin-top: 3px; letter-spacing: 0.04em;">TEAM CONSOLE</small></div>
+<nav style="display: flex; flex-direction: column; gap: 4px;">
+<span class="ei-eyebrow" style="padding: 0 12px 2px; color: var(--ink-muted);">Programs</span>
+<sc-for list="{{ progNav }}" as="n" hint-placeholder-count="3">
+<button style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: 0; border-radius: 8px; cursor: pointer; font-family: inherit; color: var(--ink); background: {{ n.bg }};" onClick="{{ n.go }}"><span style="display: flex; flex-direction: column; text-align: left;"><span style="font-weight: 600; font-size: 14px;">{{ n.label }}</span><span style="font-size: 12px; color: var(--ink-muted);">{{ n.sub }}</span></span><span class="{{ n.countCls }}">{{ n.count }}</span></button>
+<sc-if value="{{ n.hasSubs }}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 2px; margin: 0 0 6px 14px; padding-left: 8px; border-left: 2px solid var(--line);">
+<sc-for list="{{ n.subs }}" as="u" hint-placeholder-count="2"><button style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; border: 0; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--ink); background: {{ u.bg }};" onClick="{{ u.go }}"><span style="font-weight: {{ u.weight }};">{{ u.label }}</span><span class="{{ u.countCls }}">{{ u.count }}</span></button></sc-for>
+</div></sc-if>
+</sc-for>
+<span class="ei-eyebrow" style="padding: 14px 12px 2px; color: var(--ink-muted);">Shared</span>
+<sc-for list="{{ sharedNav }}" as="n" hint-placeholder-count="2">
+<button style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: 0; border-radius: 8px; cursor: pointer; font-family: inherit; color: var(--ink); background: {{ n.bg }};" onClick="{{ n.go }}"><span style="display: flex; flex-direction: column; text-align: left;"><span style="font-weight: 600; font-size: 14px;">{{ n.label }}</span><span style="font-size: 12px; color: var(--ink-muted);">{{ n.sub }}</span></span><span class="{{ n.countCls }}">{{ n.count }}</span></button>
+</sc-for>
+</nav>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+<div class="ei-person"><span class="ei-avatar">L</span><div class="ei-person__text"><b>Lucía</b><span>Program coordinator</span></div></div>
+<div class="ei-person"><span class="ei-avatar">V</span><div class="ei-person__text"><b>Victoria</b><span>WISE and Open Innovation</span></div></div>
+<p class="ei-small ei-muted" style="margin: 0;">Sample data based on the anonymized NAVES file and the real evaluation grid. Scores are illustrative.</p>
+</div>
+</aside>
+
+<main ref="{{ scrollRef }}" style="min-height: 100vh; box-sizing: border-box; padding: 24px 32px 32px; display: flex; flex-direction: column; gap: 20px;">
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}"><div class="ei-alert ei-alert--success"><span class="ei-alert__icon">✓</span><div class="ei-alert__body"><b>{{ toast }}</b></div></div></sc-if>
+
+<sc-if value="{{ v.queue }}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span class="ei-eyebrow">NAVES Argentina 2026 · Inscripción</span><h1 class="ei-h1">Filter I queue</h1><p class="ei-small ei-muted" style="margin: 0;">AI pre-scores every application with your evaluation grid. You set the pass mark; only the borderline band needs a full human review.</p></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+<div class="ei-card ei-card--compact" style="gap: 6px;"><span class="ei-eyebrow" style="color: var(--success);">Clear pass</span><span style="font: 600 30px/1 var(--font-serif);">{{ nPass }}</span><span class="ei-small ei-muted">score ≥ {{ passMark }}</span></div>
+<div class="ei-card ei-card--compact" style="gap: 6px;"><span class="ei-eyebrow" style="color: var(--warning);">Borderline · review</span><span style="font: 600 30px/1 var(--font-serif);">{{ nBorder }}</span><span class="ei-small ei-muted">between {{ lowMark }} and {{ passMark }}</span></div>
+<div class="ei-card ei-card--compact" style="gap: 6px;"><span class="ei-eyebrow" style="color: var(--ink-muted);">Below threshold</span><span style="font: 600 30px/1 var(--font-serif);">{{ nBelow }}</span><span class="ei-small ei-muted">score &lt; {{ lowMark }}</span></div>
+<div class="ei-card ei-card--compact" style="gap: 6px; background: var(--brand-soft); border-color: var(--brand-soft);"><span class="ei-eyebrow" style="color: var(--brand-ink);">Full manual reviews</span><span style="font: 600 30px/1 var(--font-serif); color: var(--brand-ink);">{{ nBorder }} of {{ nApps }}</span><span class="ei-small" style="color: var(--brand-ink);">instead of {{ nApps }} of {{ nApps }}</span></div>
+</div>
+<div class="ei-card ei-card--compact" style="flex-direction: row; flex-wrap: wrap; align-items: center; gap: 24px;">
+<div style="display: flex; align-items: center; gap: 8px;"><span style="font-weight: 600; font-size: 14px;">Pass mark</span><button class="ei-btn ei-btn--secondary ei-btn--sm" aria-label="Lower pass mark" onClick="{{ passDown }}">−</button><span class="ei-mono" style="font-size: 14px; min-width: 36px; text-align: center;">{{ passMark }}</span><button class="ei-btn ei-btn--secondary ei-btn--sm" aria-label="Raise pass mark" onClick="{{ passUp }}">+</button></div>
+<div style="display: flex; align-items: center; gap: 8px;"><span style="font-weight: 600; font-size: 14px;">Review band starts at</span><button class="ei-btn ei-btn--secondary ei-btn--sm" aria-label="Lower review band" onClick="{{ lowDown }}">−</button><span class="ei-mono" style="font-size: 14px; min-width: 36px; text-align: center;">{{ lowMark }}</span><button class="ei-btn ei-btn--secondary ei-btn--sm" aria-label="Raise review band" onClick="{{ lowUp }}">+</button></div>
+<div style="margin-left: auto; display: flex; gap: 8px;">
+<button class="ei-btn ei-btn--primary ei-btn--sm" disabled="{{ noPendingPass }}" onClick="{{ advanceAll }}">Advance {{ pendingPass }} clear passes</button>
+<button class="ei-btn ei-btn--secondary ei-btn--sm" disabled="{{ noPendingBelow }}" onClick="{{ rejectAll }}">Send "not this cycle" to {{ pendingBelow }}</button>
+</div>
+</div>
+<div class="ei-card" style="padding: 0; gap: 0; overflow: hidden;">
+<div style="display: grid; grid-template-columns: 2.2fr 1.6fr 1.2fr 0.8fr 1.1fr 1.1fr 0.9fr; gap: 12px; padding: 10px 16px; background: var(--surface-sunken); border-bottom: 1px solid var(--line);" class="ei-eyebrow"><span style="color: var(--ink-muted);">Project</span><span style="color: var(--ink-muted);">Category · stage</span><span style="color: var(--ink-muted);">Province</span><span style="color: var(--ink-muted);">AI score</span><span style="color: var(--ink-muted);">Band</span><span style="color: var(--ink-muted);">Status</span><span></span></div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="12">
+<div style="display: grid; grid-template-columns: 2.2fr 1.6fr 1.2fr 0.8fr 1.1fr 1.1fr 0.9fr; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); align-items: center; font-size: 14px;">
+<span style="display: flex; flex-direction: column;"><b>{{ r.name }}</b><span class="ei-small ei-muted">{{ r.sector }}{{ r.returning }}</span></span>
+<span class="ei-small">{{ r.category }} · {{ r.stage }}</span>
+<span class="ei-small">{{ r.province }}</span>
+<span class="ei-mono" style="font-size: 14px; font-weight: 600;">{{ r.score }}</span>
+<span><span class="{{ r.bandCls }}">{{ r.band }}</span></span>
+<span><span class="{{ r.statusCls }}">{{ r.status }}</span></span>
+<button class="ei-btn ei-btn--ghost ei-btn--sm" onClick="{{ r.open }}">Review →</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.eval }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+<button class="ei-link" style="background: none; border: 0; padding: 0; font-size: 14px; cursor: pointer; text-decoration: none;" onClick="{{ goQueue }}">← Filter I queue</button>
+<span class="ei-mono ei-muted">APPLICATION {{ sel.idx }} OF {{ nApps }}</span>
+</div>
+<div style="display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; align-items: start;">
+<div class="ei-card" style="gap: 14px;">
+<div style="display: flex; flex-direction: column; gap: 6px;"><span class="ei-eyebrow">{{ sel.sector }}</span><h1 class="ei-h2">{{ sel.name }}</h1><p style="margin: 0; font-size: 14px;">{{ sel.brief }}</p></div>
+<sc-if value="{{ sel.isReturning }}" hint-placeholder-val="{{ false }}"><div class="ei-alert ei-alert--warning"><span class="ei-alert__icon">!</span><div class="ei-alert__body"><b>Returning applicant</b><span>{{ sel.history }}</span></div></div></sc-if>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; font-size: 13px;">
+<div><div class="ei-mono ei-muted">CATEGORY</div><div style="font-weight: 600;">{{ sel.category }}</div></div>
+<div><div class="ei-mono ei-muted">STAGE</div><div style="font-weight: 600;">{{ sel.stage }}</div></div>
+<div><div class="ei-mono ei-muted">PROVINCE</div><div style="font-weight: 600;">{{ sel.province }}</div></div>
+<div><div class="ei-mono ei-muted">TEAM</div><div style="font-weight: 600;">{{ sel.team }} members</div></div>
+<div><div class="ei-mono ei-muted">HEARD ABOUT US</div><div style="font-weight: 600;">{{ sel.channel }}</div></div>
+<div><div class="ei-mono ei-muted">ELIGIBILITY</div><div style="font-weight: 600; color: var(--success);">✓ Checked by form</div></div>
+</div>
+<div style="border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;"><span class="ei-mono ei-muted">WEIGHTED SCORE</span>
+<div style="display: flex; align-items: baseline; gap: 10px;"><span style="font: 600 40px/1 var(--font-serif);">{{ sel.score }}</span><span class="{{ sel.bandCls }}">{{ sel.band }}</span></div>
+<span class="ei-small ei-muted">{{ sel.editedNote }}</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<sc-for list="{{ sel.crit }}" as="c" hint-placeholder-count="4">
+<div class="ei-card ei-card--compact" style="gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+<div style="display: flex; flex-direction: column;"><b style="font-size: 15px;">{{ c.name }}</b><span class="ei-small ei-muted">{{ c.en }} · weight {{ c.weight }}</span></div>
+<span class="{{ c.srcCls }}">{{ c.src }}</span>
+</div>
+<p style="margin: 0; font-size: 14px;"><b style="color: var(--accent);">AI rationale:</b> {{ c.why }}</p>
+<div style="display: flex; align-items: center; gap: 6px;"><span class="ei-small ei-muted" style="margin-right: 4px;">Your score</span>
+<sc-for list="{{ c.opts }}" as="o" hint-placeholder-count="5"><button class="ei-chip" style="min-height: 34px; padding: 4px 14px;" aria-pressed="{{ o.pressed }}" onClick="{{ o.pick }}">{{ o.n }}</button></sc-for>
+<span class="ei-small ei-muted" style="margin-left: 8px;">AI suggested {{ c.ai }}</span></div>
+</div>
+</sc-for>
+<div class="ei-card ei-card--compact" style="flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;">
+<span style="font-weight: 600; margin-right: auto;">Decision for Filter I</span>
+<button class="ei-btn ei-btn--secondary" onClick="{{ markBorder }}">Needs second review</button>
+<button class="ei-btn ei-btn--secondary" onClick="{{ openReject }}">Not this cycle</button>
+<button class="ei-btn ei-btn--primary" onClick="{{ advanceSel }}">Advance to Filter II</button>
+</div>
+<sc-if value="{{ rejectOpen }}" hint-placeholder-val="{{ false }}">
+<div class="ei-card" style="gap: 12px; border-color: var(--line-strong);">
+<h2 class="ei-h3">Feedback sent automatically</h2>
+<div style="background: var(--surface-sunken); border-radius: var(--radius-md); padding: 14px 16px; font-size: 14px; display: flex; flex-direction: column; gap: 8px;">
+<span>Hi {{ sel.name }} team,</span>
+<span>Thank you for applying to NAVES Argentina 2026. This cycle we can't offer you a seat, but we want you to know how your application was read.</span>
+<span><b>Your strongest point:</b> {{ sel.best }}.</span>
+<span><b>Where to focus next:</b> {{ sel.worst }}. {{ sel.tip }}</span>
+<span>Your profile stays active, and we'll let you know when a program or partner fits what you're building.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;"><span class="ei-small ei-muted">Saved to talent bank with tags:</span><span class="ei-badge ei-badge--brand">{{ sel.sector }}</span><span class="ei-badge ei-badge--brand">{{ sel.stage }}</span><span class="ei-badge ei-badge--brand">{{ sel.province }}</span><span class="ei-badge ei-badge--warning">Weakest: {{ sel.worst }}</span></div>
+<div style="display: flex; justify-content: flex-end; gap: 8px;"><button class="ei-btn ei-btn--ghost" onClick="{{ closeReject }}">Cancel</button><button class="ei-btn ei-btn--primary" onClick="{{ confirmReject }}">Send feedback and save to bank</button></div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.bank }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span class="ei-eyebrow">All programs</span><h1 class="ei-h1">Talent bank</h1><p class="ei-small ei-muted" style="margin: 0;">Every "not this cycle" and every drop-out stays here with tags, so a "no" today can become a match tomorrow.</p></div>
+<div class="ei-card ei-card--compact" style="flex-direction: row; align-items: center; gap: 16px; background: var(--accent-soft); border-color: var(--accent-soft);">
+<div style="display: flex; flex-direction: column; gap: 2px; margin-right: auto;"><span class="ei-eyebrow">Partner request</span><b>Molinos Innova 2026 is looking for food and agro projects</b><span class="ei-small">Agronegocios or Industria vitivinícola · profile shared only with consent</span></div>
+<button class="{{ partnerBtnCls }}" onClick="{{ togglePartner }}">{{ partnerBtn }}</button>
+</div>
+<div class="ei-chips"><sc-for list="{{ sectorChips }}" as="s" hint-placeholder-count="6"><button class="ei-chip" aria-pressed="{{ s.pressed }}" onClick="{{ s.pick }}">{{ s.label }}</button></sc-for></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+<sc-for list="{{ bankRows }}" as="b" hint-placeholder-count="6">
+<article class="{{ b.cls }}" style="gap: 8px;">
+<div class="ei-program__badges"><span class="{{ b.originCls }}">{{ b.origin }}</span><span class="{{ b.consentCls }}">{{ b.consent }}</span></div>
+<h3 class="ei-program__title" style="font-size: 19px; line-height: 24px;">{{ b.name }}</h3>
+<div class="ei-program__meta"><span>{{ b.sector }}</span><span>{{ b.stage }}</span><span>{{ b.province }}</span></div>
+<span class="ei-small"><b>Weakest criterion:</b> {{ b.worst }}</span>
+<div class="ei-program__actions"><button class="ei-btn ei-btn--secondary ei-btn--sm" disabled="{{ b.noConsent }}" onClick="{{ b.suggest }}">{{ b.suggestLabel }}</button></div>
+</article>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.alerts }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span class="ei-eyebrow">NAVES Argentina 2025 · Formación Avanzada</span><h1 class="ei-h1">Drop-out alerts</h1><p class="ei-small ei-muted" style="margin: 0;">Deliverable due Fri, Dec 4. In the sample file, 4 of 18 admitted teams never submitted it, and 2 more dropped out with no reason recorded.</p></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start;">
+<div class="ei-card" style="padding: 0; gap: 0; overflow: hidden;">
+<div style="display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 1fr 1.4fr; gap: 12px; padding: 10px 16px; background: var(--surface-sunken); border-bottom: 1px solid var(--line);" class="ei-eyebrow"><span style="color: var(--ink-muted);">Team</span><span style="color: var(--ink-muted);">Deliverable</span><span style="color: var(--ink-muted);">Last activity</span><span style="color: var(--ink-muted);">Risk</span><span></span></div>
+<sc-for list="{{ alertRows }}" as="a" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 1fr 1.4fr; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); align-items: center; font-size: 14px;">
+<span style="display: flex; flex-direction: column;"><b>{{ a.name }}</b><span class="ei-small ei-muted">{{ a.province }} · {{ a.team }} members</span></span>
+<span class="ei-small">{{ a.deliv }}</span>
+<span class="ei-small">{{ a.last }}</span>
+<span><span class="{{ a.riskCls }}">{{ a.risk }}</span></span>
+<span style="display: flex; gap: 6px; justify-content: flex-end;"><sc-if value="{{ a.needsAction }}" hint-placeholder-val="{{ false }}"><button class="ei-btn ei-btn--secondary ei-btn--sm" disabled="{{ a.sent }}" onClick="{{ a.remind }}">{{ a.remindLabel }}</button></sc-if><sc-if value="{{ a.isHigh }}" hint-placeholder-val="{{ false }}"><button class="ei-btn ei-btn--primary ei-btn--sm" disabled="{{ a.assigned }}" onClick="{{ a.assign }}">{{ a.assignLabel }}</button></sc-if></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div class="ei-card ei-card--compact"><h2 class="ei-h3">Automatic rules</h2>
+<sc-for list="{{ rules }}" as="u" hint-placeholder-count="4"><label class="ei-check"><input type="checkbox" checked="{{ u.on }}" onChange="{{ u.toggle }}"><span>{{ u.label }}</span></label></sc-for>
+</div>
+<div class="ei-card ei-card--compact"><h2 class="ei-h3">Why teams leave</h2>
+<p class="ei-small" style="margin: 0;"><b>Today:</b> 0 of 2 drop-outs in the sample file have a reason recorded (Brújula, Origen).</p>
+<p class="ei-small" style="margin: 0;"><b>With the "I can't continue" button:</b> every drop-out comes with a reason, and Lucía gets 48 h to offer a new deadline or a pause before the seat is lost.</p>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.pipe }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span class="ei-eyebrow">{{ pp.eyebrow }}</span><h1 class="ei-h1">{{ pp.title }}</h1><p class="ei-small ei-muted" style="margin: 0;">{{ pp.lede }}</p></div>
+<div style="display: grid; grid-template-columns: {{ pp.grid }}; gap: 12px;">
+<sc-for list="{{ stageCards }}" as="c" hint-placeholder-count="4">
+<div class="ei-card ei-card--compact" style="gap: 6px;"><span class="ei-eyebrow" style="color: {{ c.color }};">{{ c.label }}</span><span style="font: 600 30px/1 var(--font-serif);">{{ c.n }}</span><span class="ei-small ei-muted">{{ c.hint }}</span></div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 16px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<sc-if value="{{ noReqs }}" hint-placeholder-val="{{ false }}"><div class="ei-card"><p style="margin: 0;">No requests yet.</p></div></sc-if>
+<sc-for list="{{ reqRows }}" as="q" hint-placeholder-count="3">
+<article class="ei-card" style="gap: 10px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<div class="ei-program__badges"><sc-if value="{{ q.showProgram }}" hint-placeholder-val="{{ false }}"><span class="ei-badge ei-badge--neutral">{{ q.program }}</span></sc-if><span class="{{ q.statusCls }}">{{ q.statusLabel }}</span><sc-if value="{{ q.hasDue }}" hint-placeholder-val="{{ false }}"><span class="{{ q.dueCls }}">{{ q.dueLabel }}</span></sc-if><sc-if value="{{ q.fromSite }}" hint-placeholder-val="{{ false }}"><span class="ei-badge ei-badge--accent">Just now · from the website</span></sc-if></div>
+<h3 class="ei-program__title" style="font-size: 20px; line-height: 26px;">{{ q.company }}</h3>
+<span class="ei-small ei-muted">{{ q.industry }} · {{ q.status }} · {{ q.name }} · {{ q.email }} · received {{ q.when }}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<div style="background: var(--surface-sunken); border-radius: var(--radius-md); padding: 10px 14px; font-size: 14px;"><div class="ei-mono ei-muted" style="margin-bottom: 4px;">THE ENTREPRENEURIAL VENTURE</div>{{ q.describe }}</div>
+<div style="background: var(--surface-sunken); border-radius: var(--radius-md); padding: 10px 14px; font-size: 14px;"><div class="ei-mono ei-muted" style="margin-bottom: 4px;">LOOKING FOR</div>{{ q.looking }}</div>
+</div>
+<sc-if value="{{ q.hasChallenge }}" hint-placeholder-val="{{ false }}"><span class="ei-small">Matched with <b>{{ q.challenge }}</b></span></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end;">
+<sc-if value="{{ q.showChallenges }}" hint-placeholder-val="{{ false }}"><span class="ei-small ei-muted" style="margin-right: auto;">Match with a partner challenge:</span><sc-for list="{{ q.challengeChips }}" as="h" hint-placeholder-count="3"><button class="ei-chip" style="min-height: 34px; padding: 4px 12px;" onClick="{{ h.pick }}">{{ h.label }}</button></sc-for></sc-if>
+<sc-if value="{{ q.canNotFit }}" hint-placeholder-val="{{ false }}"><button class="ei-btn ei-btn--ghost ei-btn--sm" onClick="{{ q.notFit }}">Not a fit</button></sc-if>
+<sc-if value="{{ q.hasNext }}" hint-placeholder-val="{{ false }}"><button class="ei-btn ei-btn--primary ei-btn--sm" onClick="{{ q.next }}">{{ q.nextLabel }}</button></sc-if>
+</div>
+</article>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div class="ei-card ei-card--compact"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;"><h2 class="ei-h3">Why founders left the form</h2><button class="ei-link" style="background: none; border: 0; padding: 0; font-size: 13px; cursor: pointer; flex: none;" onClick="{{ pp.seeWho }}">See who →</button></div><p class="ei-small ei-muted" style="margin: 0;">{{ pp.exitTotal }} people pressed Cancel and told us why.</p>
+<sc-for list="{{ exits }}" as="e" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px;"><div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px;"><span>{{ e.label }}</span><b class="ei-mono">{{ e.n }}</b></div><div style="height: 6px; border-radius: 3px; background: var(--surface-sunken);"><div style="height: 6px; border-radius: 3px; background: var(--brand); width: {{ e.pct }};"></div></div></div>
+</sc-for>
+</div>
+<sc-if value="{{ pp.isOi }}" hint-placeholder-val="{{ false }}"><div class="ei-card ei-card--compact"><h2 class="ei-h3">Open partner challenges</h2>
+<sc-for list="{{ challenges }}" as="h" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;"><div style="display: flex; flex-direction: column;"><b style="font-size: 14px;">{{ h.label }}</b><span class="ei-small ei-muted">{{ h.desc }}</span></div><span class="ei-badge ei-badge--brand" style="flex: none;">{{ h.n }} matched</span></div></sc-for>
+</div></sc-if>
+<div class="ei-card ei-card--compact"><h2 class="ei-h3">What we ask for</h2><p class="ei-small" style="margin: 0;">{{ pp.asks }}</p><p class="ei-small ei-muted" style="margin: 0;">{{ pp.slaNote }}</p></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.stopped }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span class="ei-eyebrow">All programs</span><h1 class="ei-h1">Stopped and cancelled</h1><p class="ei-small ei-muted" style="margin: 0;">Everyone who pressed Cancel on a form, or "I can't continue" in a program, with the reason they gave. If they left an email, you can follow up.</p></div>
+<div class="ei-chips"><sc-for list="{{ stopChips }}" as="c" hint-placeholder-count="5"><button class="ei-chip" aria-pressed="{{ c.pressed }}" onClick="{{ c.pick }}">{{ c.label }}</button></sc-for></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; align-items: start;">
+<div class="ei-card" style="padding: 0; gap: 0; overflow: hidden;">
+<div style="display: grid; grid-template-columns: 1.7fr 1fr 1.1fr 1.6fr 0.6fr 1fr; gap: 12px; padding: 10px 16px; background: var(--surface-sunken); border-bottom: 1px solid var(--line);" class="ei-eyebrow"><span style="color: var(--ink-muted);">Who</span><span style="color: var(--ink-muted);">Program</span><span style="color: var(--ink-muted);">Where they stopped</span><span style="color: var(--ink-muted);">Reason</span><span style="color: var(--ink-muted);">Date</span><span></span></div>
+<sc-if value="{{ noStops }}" hint-placeholder-val="{{ false }}"><p style="margin: 0; padding: 16px;">Nobody has stopped in this program yet.</p></sc-if>
+<sc-for list="{{ stopRows }}" as="x" hint-placeholder-count="10">
+<div style="display: grid; grid-template-columns: 1.7fr 1fr 1.1fr 1.6fr 0.6fr 1fr; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); align-items: center; font-size: 14px;">
+<span style="display: flex; flex-direction: column; min-width: 0;"><span style="display: flex; gap: 6px; align-items: center;"><b style="color: {{ x.nameColor }};">{{ x.who }}</b><sc-if value="{{ x.fromSite }}" hint-placeholder-val="{{ false }}"><span class="ei-badge ei-badge--accent">Just now</span></sc-if></span><span class="ei-small ei-muted" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ x.contact }}</span></span>
+<span><span class="ei-badge ei-badge--brand">{{ x.program }}</span></span>
+<span class="ei-small" style="display: flex; flex-direction: column;"><span>{{ x.where }}</span><span class="ei-muted">{{ x.progress }}</span></span>
+<span class="ei-small" style="font-weight: 600;">{{ x.reason }}</span>
+<span class="ei-small ei-muted">{{ x.when }}</span>
+<span style="display: flex; justify-content: flex-end;"><sc-if value="{{ x.canFollow }}" hint-placeholder-val="{{ true }}"><button class="ei-btn ei-btn--secondary ei-btn--sm" disabled="{{ x.followed }}" onClick="{{ x.follow }}">{{ x.followLabel }}</button></sc-if><sc-if value="{{ x.noContact }}" hint-placeholder-val="{{ false }}"><span class="ei-small ei-muted">No email</span></sc-if></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div class="ei-card ei-card--compact" style="gap: 6px;"><span class="ei-eyebrow" style="color: var(--ink-muted);">Stopped</span><span style="font: 600 30px/1 var(--font-serif);">{{ stopTotal }}</span><span class="ei-small ei-muted">{{ stopReachable }} left an email you can follow up</span></div>
+<div class="ei-card ei-card--compact"><h2 class="ei-h3">Top reasons</h2>
+<sc-for list="{{ stopReasons }}" as="e" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px;"><div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px;"><span>{{ e.label }}</span><b class="ei-mono">{{ e.n }}</b></div><div style="height: 6px; border-radius: 3px; background: var(--surface-sunken);"><div style="height: 6px; border-radius: 3px; background: var(--brand); width: {{ e.pct }};"></div></div></div>
+</sc-for>
+</div>
+<div class="ei-card ei-card--compact"><h2 class="ei-h3">What "Follow up" sends</h2><p class="ei-small" style="margin: 0;">A short, personal email from the program owner that answers their reason. For example, "not sure it fits" gets a 15-minute call offer; "asks for too much" gets a shorter form link.</p></div>
+</div>
+</div>
+</sc-if>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+  data() {
+    const A = (id, name, sector, province, category, stage, team, channel, scores, brief, history) => ({ id, name, sector, province, category, stage, team, channel, scores, brief, history });
+    return [
+      A('a1', 'Raíz Agro', 'Agronegocios', 'Córdoba', 'Idea de negocio', 'Prototipo', 2, 'Program Finder', [4, 3.5, 4.5, 2], 'Soil sensors that tell small farmers exactly when to irrigate. Tested with 12 farms this season.', null),
+      A('a2', 'Hilo', 'Economía del conocimiento', 'CABA', 'Empresa naciente', 'Mercado', 3, 'Alumni IAE', [5, 4, 5, 4], 'Payroll and invoicing assistant for freelance creatives, with 140 paying users.', null),
+      A('a3', 'Solana', 'Energías renovables', 'San Juan', 'Idea de negocio', 'Planificación', 2, 'RRSS EmprendeIAE', [3, 3, 4, 3], 'Shared solar kits for rural schools, financed by local cooperatives.', null),
+      A('a4', 'Viñas del Sur', 'Industria vitivinícola', 'Mendoza', 'Nuevo proyecto de empresa en marcha', 'MVP', 4, 'Personal de Banco Macro', [4, 4, 4, 3], 'Export line of low-intervention wines from a family winery, piloting in Brazil.', null),
+      A('a5', 'Nido', 'Salud', 'Santa Fe', 'Idea de negocio', 'Planificación', 1, 'Amigos/Conocidos', [2, 2, 3, 2], 'An app to support new parents.', null),
+      A('a6', 'Ruta 40', 'Turismo', 'Salta', 'Empresa naciente', 'MVP', 2, 'Publicidad en medios', [3, 2, 3, 3], 'Booking platform for community-run lodges along Ruta 40.', null),
+      A('a7', 'Cobre', 'Minería', 'Catamarca', 'Idea de negocio', 'Planificación', 1, 'Otros', [2, 1, 2, 2], 'Technology services for the mining sector.', null),
+      A('a8', 'Chacra Digital', 'Agronegocios', 'Entre Ríos', 'Empresa naciente', 'Mercado', 3, 'Referidos (antiguos participantes)', [4, 3, 5, 4], 'Farm-management app for mid-size producers; 60 farms paying a monthly fee.', null),
+      A('a9', 'Pozo Limpio', 'Oil & Gas', 'Neuquén', 'Empresa naciente', 'Prototipo', 3, 'Participé en ediciones anteriores', [3, 4, 3, 2], 'Biological treatment for oilfield wastewater, validated in a lab pilot.', 'Applied to NAVES 2025 · not admitted at Filter I (weakest: Mercado objetivo).'),
+      A('a10', 'Mate Labs', 'Economía del conocimiento', 'Misiones', 'Empresa naciente', 'MVP', 4, 'Mail', [5, 4, 4, 4], 'Traceability software for yerba mate cooperatives, used by 3 co-ops.', null),
+      A('a11', 'Brisa', 'Energías renovables', 'Chubut', 'Idea de negocio', 'Prototipo', 2, 'RRSS Banco Macro - Fundación Macro', [3, 3, 2, 3], 'Small wind turbines for Patagonian ranches.', null),
+      A('a12', 'Cuenca', 'Agronegocios', 'Tucumán', 'Idea de negocio', 'Planificación', 1, 'Amigos/Conocidos', [2, 3, 2, 1], 'Marketplace for regional produce.', null)
+    ];
+  }
+  initial() {
+    return {
+      view: 'queue', sel: 'a1', passMark: 3.5, lowMark: 2.5, edits: {}, status: {}, rejectOpen: false, toast: '',
+      sector: 'All', partner: false, suggested: {}, reminded: {}, assigned: {},
+      rules: [true, true, true, true], ownerFilter: 'All', reqEdits: {},
+      bank: [
+        { id: 'b1', name: 'Nexo', sector: 'Agronegocios', stage: 'Planificación', province: 'CABA', worst: 'Mercado objetivo', origin: 'NAVES 2025 · Filter I', consent: true },
+        { id: 'b2', name: 'Nodo', sector: 'Salud', stage: 'MVP', province: 'Corrientes', worst: 'Coherencia problema–solución', origin: 'NAVES 2025 · Filter I', consent: true },
+        { id: 'b3', name: 'Ayni', sector: 'Minería', stage: 'Planificación', province: 'Mendoza', worst: 'Claridad del problema', origin: 'NAVES 2025 · Filter I', consent: false },
+        { id: 'b4', name: 'Pulso', sector: 'Energías renovables', stage: 'MVP', province: 'San Luis', worst: 'Consistencia de la inscripción', origin: 'NAVES 2025 · Filter I', consent: true },
+        { id: 'b5', name: 'Brújula', sector: 'Energías renovables', stage: 'MVP', province: 'Catamarca', worst: '—', origin: 'NAVES 2025 · dropped out', consent: true },
+        { id: 'b6', name: 'Origen', sector: 'Agronegocios', stage: 'Planificación', province: 'Formosa', worst: '—', origin: 'NAVES 2025 · dropped out', consent: true }
+      ]
+    };
+  }
+  componentDidMount() {
+    this.__onReq = () => this.forceUpdate();
+    try { window.addEventListener('ei-requests', this.__onReq); window.addEventListener('storage', this.__onReq); } catch (e) {}
+  }
+  componentWillUnmount() { try { window.removeEventListener('ei-requests', this.__onReq); window.removeEventListener('storage', this.__onReq); } catch (e) {} }
+  liveRequests() {
+    try { const w = window; if (w.__eiStore) return w.__eiStore.list(); const v = JSON.parse(localStorage.getItem('emprendeiae-contact-requests') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+  }
+  liveExits() {
+    try { const w = window; if (w.__eiStore && w.__eiStore.exits) return w.__eiStore.exits(); const v = JSON.parse(localStorage.getItem('emprendeiae-form-exits') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+  }
+  componentDidUpdate() { const k = this.state.view + '|' + this.state.sel; if (this.__lastKey !== k) { this.__lastKey = k; try { window.scrollTo(0, 0); } catch (e) {} } }
+  renderVals() {
+    if (!this.state || !this.state.view) this.state = Object.assign({}, this.state || {}, this.initial());
+    const st = this.state;
+    const W = [0.35, 0.15, 0.35, 0.15];
+    const CRIT = [
+      { name: 'Claridad del problema', en: 'Clarity of the problem', src: 'AI', tip: 'Name one specific user and describe how they solve the problem today.',
+        why: { 5: 'Names the user, the pain and today’s workaround.', 4: 'User and pain are clear; today’s workaround isn’t described.', 3: 'The problem is plausible but the affected user is broad.', 2: 'Problem stated in general terms, with no specific user.', 1: 'No identifiable problem.' } },
+      { name: 'Coherencia problema – solución – propuesta de valor', en: 'Problem–solution–value fit', src: 'AI', tip: 'Show how each feature removes a specific part of the pain.',
+        why: { 5: 'The solution addresses the stated pain directly; value is explicit.', 4: 'The solution fits; the value proposition could be sharper.', 3: 'Partial fit: the solution covers only part of the problem.', 2: 'Solution and problem are only loosely connected.', 1: 'No link between problem and solution.' } },
+      { name: 'Consistencia y calidad de la inscripción', en: 'Application quality', src: 'Auto · form check', tip: 'Complete every section and check that your answers are consistent.',
+        why: { 5: 'All 5 form checks passed.', 4: 'One optional field is missing.', 3: 'Two checks failed, such as short answers or missing team emails.', 2: 'Several answers are under the minimum length.', 1: 'Mostly incomplete.' } },
+      { name: 'Mercado objetivo', en: 'Target market', src: 'AI', tip: 'Size your first customer segment with real numbers: how many, where, and what they pay today.',
+        why: { 5: 'First segment sized with numbers and location.', 4: 'Segment defined; size roughly estimated.', 3: 'Segment named but not sized.', 2: 'Market described as “everyone” in a sector.', 1: 'No market information.' } }
+    ];
+    const apps = this.data();
+    const scoresOf = (a) => st.edits[a.id] || a.scores;
+    const wsum = (s) => Math.round(s.reduce((t, x, i) => t + x * W[i], 0) * 100) / 100;
+    const bandOf = (sc) => sc >= st.passMark ? 'pass' : (sc >= st.lowMark ? 'border' : 'below');
+    const BAND = { pass: ['Clear pass', 'ei-badge ei-badge--success'], border: ['Borderline', 'ei-badge ei-badge--warning'], below: ['Below threshold', 'ei-badge ei-badge--neutral'] };
+    const STATUS = { pending: ['Pending', 'ei-badge ei-badge--neutral'], advanced: ['Advanced ✓', 'ei-badge ei-badge--success'], review: ['Second review', 'ei-badge ei-badge--warning'], rejected: ['Not this cycle', 'ei-badge ei-badge--neutral'] };
+    const statusOf = (a) => st.status[a.id] || 'pending';
+    const enriched = apps.map((a, i) => { const s = scoresOf(a); const sc = wsum(s); return Object.assign({}, a, { s, sc, band: bandOf(sc), idx: i + 1 }); });
+    const sorted = enriched.slice().sort((x, y) => y.sc - x.sc);
+    const count = (b) => enriched.filter(a => a.band === b).length;
+    const pendingPass = enriched.filter(a => a.band === 'pass' && statusOf(a) === 'pending');
+    const pendingBelow = enriched.filter(a => a.band === 'below' && statusOf(a) === 'pending');
+    const toast = (msg) => ({ toast: msg });
+    const worstOf = (s) => { let m = 0; s.forEach((x, i) => { if (x < s[m]) m = i; }); return m; };
+    const bestOf = (s) => { let m = 0; s.forEach((x, i) => { if (x > s[m]) m = i; }); return m; };
+    const toBank = (a, bank) => bank.some(b => b.id === a.id) ? bank : bank.concat([{ id: a.id, name: a.name, sector: a.sector, stage: a.stage, province: a.province, worst: CRIT[worstOf(a.s)].name, origin: 'NAVES 2026 · Filter I', consent: true }]);
+
+    const rows = sorted.map(a => ({
+      name: a.name, sector: a.sector, returning: a.history ? ' · returning' : '', category: a.category, stage: a.stage, province: a.province,
+      score: a.sc.toFixed(2), band: BAND[a.band][0], bandCls: BAND[a.band][1],
+      status: STATUS[statusOf(a)][0], statusCls: STATUS[statusOf(a)][1],
+      open: () => this.setState({ view: 'eval', sel: a.id, rejectOpen: false, toast: '' })
+    }));
+
+    const cur = enriched.find(a => a.id === st.sel) || enriched[0];
+    const edited = !!st.edits[cur.id];
+    const sel = {
+      idx: cur.idx, name: cur.name, sector: cur.sector, brief: cur.brief, category: cur.category, stage: cur.stage, province: cur.province, team: cur.team, channel: cur.channel,
+      isReturning: !!cur.history, history: cur.history || '',
+      score: cur.sc.toFixed(2), band: BAND[cur.band][0], bandCls: BAND[cur.band][1],
+      editedNote: edited ? 'Includes your edits to the AI suggestion.' : 'AI suggestion. Change any score and the total updates.',
+      best: CRIT[bestOf(cur.s)].en.toLowerCase(), worst: CRIT[worstOf(cur.s)].name, tip: CRIT[worstOf(cur.s)].tip,
+      crit: CRIT.map((c, i) => ({
+        name: c.name, en: c.en, weight: Math.round(W[i] * 100) + '%',
+        src: (cur.s[i] !== cur.scores[i]) ? 'Edited by you' : c.src,
+        srcCls: (cur.s[i] !== cur.scores[i]) ? 'ei-badge ei-badge--brand' : (i === 2 ? 'ei-badge ei-badge--success' : 'ei-badge ei-badge--accent'),
+        why: c.why[Math.max(1, Math.floor(cur.scores[i]))], ai: cur.scores[i],
+        opts: [1, 2, 3, 4, 5].map(n => ({ n, pressed: Math.round(cur.s[i]) === n ? 'true' : 'false',
+          pick: () => { const s = (this.state.edits[cur.id] || cur.scores).slice(); s[i] = n; this.setState({ edits: Object.assign({}, this.state.edits, { [cur.id]: s }) }); } }))
+      }))
+    };
+    const setStatus = (ids, val, extra) => { const s = Object.assign({}, this.state.status); ids.forEach(id => { s[id] = val; }); this.setState(Object.assign({ status: s }, extra || {})); };
+
+    const sectors = ['All', 'Agronegocios', 'Energías renovables', 'Salud', 'Minería', 'Industria vitivinícola', 'Oil & Gas', 'Turismo', 'Economía del conocimiento'];
+    const partnerSectors = ['Agronegocios', 'Industria vitivinícola'];
+    const bankRows = st.bank.filter(b => st.partner ? partnerSectors.indexOf(b.sector) >= 0 : (st.sector === 'All' || b.sector === st.sector)).map(b => {
+      const match = st.partner && b.consent;
+      return {
+        name: b.name, sector: b.sector, stage: b.stage, province: b.province, worst: b.worst,
+        cls: match ? 'ei-program is-top' : 'ei-program',
+        origin: b.origin, originCls: b.origin.indexOf('2026') >= 0 ? 'ei-badge ei-badge--accent' : 'ei-badge ei-badge--neutral',
+        consent: b.consent ? 'Consent to share' : 'No consent', consentCls: b.consent ? 'ei-badge ei-badge--success' : 'ei-badge ei-badge--neutral',
+        noConsent: !b.consent,
+        suggestLabel: st.suggested[b.id] ? 'Suggested to Molinos ✓' : 'Suggest to partner',
+        suggest: () => this.setState({ suggested: Object.assign({}, this.state.suggested, { [b.id]: true }) })
+      };
+    });
+    const sectorChips = sectors.map(label => ({ label, pressed: (!st.partner && st.sector === label) ? 'true' : 'false', pick: () => this.setState({ sector: label, partner: false }) }));
+
+    const T = (name, province, team, deliv, days) => ({ name, province, team, deliv, days });
+    const teams = [T('Vértice', 'Santa Fe', 1, 'Not started', 15), T('Delta', 'Misiones', 4, 'Not started', 12), T('Kume', 'Neuquén', 5, 'Not started', 9), T('Senda', 'Santa Cruz', 5, 'In progress', 6), T('Yvoty', 'Santiago del Estero', 2, 'In progress', 2), T('Faro', 'Jujuy', 5, 'Submitted', 1), T('Lumen', 'Río Negro', 1, 'Submitted', 3), T('Impulso', 'Chaco', 4, 'Submitted', 4)];
+    const alertRows = teams.map(t => {
+      let risk = 'On track', riskCls = 'ei-badge ei-badge--success';
+      if (t.deliv !== 'Submitted') {
+        if (t.deliv === 'Not started' && t.days >= 10) { risk = 'High'; riskCls = 'ei-badge ei-badge--danger'; }
+        else if (t.deliv === 'Not started' || t.days >= 7) { risk = 'Medium'; riskCls = 'ei-badge ei-badge--warning'; }
+        else { risk = 'Low'; riskCls = 'ei-badge ei-badge--brand'; }
+      }
+      return {
+        name: t.name, province: t.province, team: t.team, deliv: t.deliv, last: t.days === 1 ? '1 day ago' : t.days + ' days ago', risk, riskCls,
+        needsAction: t.deliv !== 'Submitted', isHigh: risk === 'High',
+        sent: !!st.reminded[t.name], remindLabel: st.reminded[t.name] ? 'Reminder sent ✓' : 'Send reminder',
+        remind: () => this.setState({ reminded: Object.assign({}, this.state.reminded, { [t.name]: true }) }),
+        assigned: !!st.assigned[t.name], assignLabel: st.assigned[t.name] ? 'Lucía will call ✓' : 'Ask Lucía to call',
+        assign: () => this.setState({ assigned: Object.assign({}, this.state.assigned, { [t.name]: true }) })
+      };
+    });
+    const nAlerts = alertRows.filter(a => a.risk === 'High' || a.risk === 'Medium').length;
+    const ruleLabels = ['Remind teams 7 days and 48 h before the deadline', 'Alert Lucía when a team has no activity for 10 days', 'Ask for a reason when a team clicks "I can’t continue"', 'Offer a new deadline or a pause before the seat is released'];
+    const rules = ruleLabels.map((label, i) => ({ label, on: st.rules[i], toggle: () => { const r = this.state.rules.slice(); r[i] = !r[i]; this.setState({ rules: r }); } }));
+
+    const nPending = enriched.filter(a => statusOf(a) === 'pending').length;
+    // ---- WISE · Open Innovation · Hackathon & Community: light pipelines (contact form only)
+    const SEED = [
+      { id: 'REQ-0591', program: 'WISE', name: 'Carla M.', email: 'carla@luzandina.com', company: 'Luz Andina', industry: 'Health tech & medical devices', status: 'Prototype / MVP', describe: 'Low-cost test strips to detect anemia in rural clinics in Jujuy and Salta. Validated with two clinics.', looking: 'Join WISE, and find a mentor with medical-device regulatory experience.', at: '2026-09-21T13:10:00Z', pipe: 0 },
+      { id: 'REQ-0586', program: 'WISE', name: 'Julieta F.', email: 'julieta@cianoplast.com', company: 'Cianoplast', industry: 'Advanced materials & chemistry', status: 'Early revenue', describe: 'Bioplastic packaging made from algae; first 3 industrial clients in Buenos Aires.', looking: 'Join the next WISE cohort and meet investors in new materials.', at: '2026-09-15T11:20:00Z', pipe: 1 },
+      { id: 'REQ-0574', program: 'WISE', name: 'Sofía G.', email: 'sofia@brotedata.com', company: 'Brote Data', industry: 'Software, data & AI', status: 'Prototype / MVP', describe: 'Detects crop disease from phone photos; trained on 40,000 images from Argentine farms.', looking: 'A technical mentor and a first pilot with a producers’ association.', at: '2026-09-09T16:00:00Z', pipe: 2 },
+      { id: 'REQ-0562', program: 'WISE', name: 'Paula N.', email: 'paula@hidra.com.ar', company: 'Hidra', industry: 'Cleantech & energy', status: 'Early revenue', describe: 'Low-cost filters that remove arsenic from rural wells in Chaco; 300 homes served.', looking: 'Join WISE to scale to two more provinces.', at: '2026-09-02T09:40:00Z', pipe: 3 },
+      { id: 'REQ-0588', program: 'Open Innovation', name: 'Martín P.', email: 'martin@frioverde.com', company: 'FríoVerde', industry: 'Agribusiness', status: 'Early revenue', describe: 'Solar cold rooms for fruit producers; 9 units installed in Río Negro.', looking: 'A pilot with a large food company to cut post-harvest losses.', at: '2026-09-20T17:45:00Z', pipe: 0 },
+      { id: 'REQ-0580', program: 'Open Innovation', name: 'Lucas B.', email: 'lucas@sensa.io', company: 'Sensa', industry: 'Oil & Gas', status: 'Scaling', describe: 'Drone-based methane leak detection for oilfields; working with 4 operators in Neuquén.', looking: 'A pilot with a large energy company.', at: '2026-09-14T14:15:00Z', pipe: 1 },
+      { id: 'REQ-0569', program: 'Open Innovation', name: 'Rocío T.', email: 'rocio@envasecircular.com', company: 'Envase Circular', industry: 'Knowledge economy', status: 'Early revenue', describe: 'Returnable-packaging platform for consumer brands; 2 brands live in CABA.', looking: 'A corporate pilot to replace single-use packaging.', at: '2026-09-08T10:30:00Z', pipe: 2, challenge: 'Arcor' },
+      { id: 'REQ-0583', program: 'Community', name: 'Tomás R.', email: 'tomas.r@gmail.com', company: 'Tomás R. (no company yet)', industry: 'Knowledge economy', status: 'Just an idea', describe: 'An app to help small shops manage stock from WhatsApp.', looking: 'Meet other founders and learn how to validate the idea.', at: '2026-09-19T10:05:00Z', pipe: 0 },
+      { id: 'REQ-0579', program: 'IAE Hackathon', name: 'Ana L.', email: 'ana@molinetes.com', company: 'Molinetes SA', industry: 'Other', status: 'Scaling', describe: 'Mid-size manufacturer of access-control systems.', looking: 'Propose a challenge for the next IAE Hackathon.', at: '2026-09-18T09:30:00Z', pipe: 1 }
+    ];
+    const CHALLENGES = [
+      { label: 'Pan American Energy', desc: 'Cut methane emissions in upstream operations' },
+      { label: 'Bayer', desc: 'Water-efficient irrigation for small producers' },
+      { label: 'Arcor', desc: 'Less packaging waste in confectionery' }
+    ];
+    const PIPES = {
+      wise: { programs: ['WISE'], eyebrow: 'WISE · women founders in STEM · owner: Victoria', title: 'WISE requests', formName: 'WISE',
+        lede: 'Lighter than NAVES: no application and no scoring. Only the contact form, an intro call and a fit decision.',
+        stages: ['New', 'Intro call booked', 'Fit review', 'Invited to cohort'], hints: ['reply within 5 working days', '20-minute call', 'STEM background and venture', 'next WISE cohort'],
+        next: ['Book intro call', 'Move to fit review', 'Invite to next cohort'], sla: 5,
+        asks: 'Name, email, company, technology area (STEM), stage, a short description and what they’re looking for.' },
+      oi: { programs: ['Open Innovation'], eyebrow: 'Open Innovation · pilots with large companies · owner: Victoria', title: 'Open Innovation requests', formName: 'Open Innovation', isOi: true,
+        lede: 'Lighter than NAVES: no application and no scoring. Only the contact form, an intro call and a match with a partner challenge.',
+        stages: ['New', 'Intro call booked', 'Matched to a challenge', 'Pilot proposal sent'], hints: ['reply within 5 working days', '20-minute call', 'partner challenge picked', 'sent to the partner'],
+        next: ['Book intro call', null, 'Send pilot proposal'], sla: 5,
+        asks: 'Name, email, company, industry, stage, a short description and what they’re looking for.' },
+      other: { programs: ['IAE Hackathon', 'Community'], eyebrow: 'IAE Hackathon · Community · owner: Lucía', title: 'Hackathon & Community', formName: 'Hackathon and Community', showProgram: true,
+        lede: 'People who want to join the community or take part in the next IAE Hackathon. No evaluation: just a conversation.',
+        stages: ['New', 'Contacted', 'On the list'], hints: ['reply within 3 working days', 'first conversation done', 'events and program alerts'],
+        next: ['Mark as contacted', 'Add to the list'], sla: 3,
+        asks: 'Name, email, company, industry, stage, a short description and what they’re looking for.' }
+    };
+    const pipeKeyOf = (program) => program === 'WISE' ? 'wise' : (program === 'Open Innovation' ? 'oi' : 'other');
+    const live = this.liveRequests();
+    const liveIds = {}; live.forEach(r => { liveIds[r.id] = true; });
+    const allReqs = live.slice().reverse().map(r => Object.assign({ pipe: 0 }, r)).concat(SEED);
+    const fmt = (d) => { try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch (e) { return ''; } };
+    const addWorkDays = (iso, n) => { const d = new Date(iso); let k = 0; while (k < n) { d.setDate(d.getDate() + 1); const w = d.getDay(); if (w !== 0 && w !== 6) k++; } return d; };
+    const now = new Date();
+    const reqAll = allReqs.map(r => {
+      const key = pipeKeyOf(r.program); const P = PIPES[key];
+      const ed = st.reqEdits[r.id] || {};
+      const idx = ed.pipe != null ? ed.pipe : (r.pipe || 0);
+      const closed = !!ed.notFit; const last = P.stages.length - 1;
+      const challenge = ed.challenge || r.challenge || '';
+      const setEd = (x, msg) => this.setState(Object.assign({ reqEdits: Object.assign({}, this.state.reqEdits, { [r.id]: Object.assign({}, this.state.reqEdits[r.id] || {}, x) }) }, msg ? { toast: msg } : {}));
+      const due = addWorkDays(r.at, P.sla); const overdue = now > due;
+      const nextLabel = P.next[idx];
+      return Object.assign({}, r, {
+        key, idx, closed, challenge,
+        showProgram: !!P.showProgram, fromSite: !!liveIds[r.id], when: fmt(r.at),
+        statusLabel: closed ? 'Not a fit · kept in talent bank' : P.stages[idx],
+        statusCls: closed ? 'ei-badge ei-badge--neutral' : (idx === 0 ? 'ei-badge ei-badge--warning' : (idx === last ? 'ei-badge ei-badge--success' : 'ei-badge ei-badge--brand')),
+        hasDue: idx === 0 && !closed, dueLabel: overdue ? 'Overdue · was due ' + fmt(due) : 'Reply by ' + fmt(due), dueCls: overdue ? 'ei-badge ei-badge--danger' : 'ei-badge ei-badge--neutral',
+        hasChallenge: !!challenge && !closed,
+        showChallenges: key === 'oi' && idx === 1 && !closed,
+        challengeChips: CHALLENGES.map(c => ({ label: c.label, pick: () => setEd({ pipe: 2, challenge: c.label }, r.company + ' matched with ' + c.label + '.') })),
+        hasNext: !closed && idx < last && !!nextLabel, nextLabel: nextLabel || '',
+        next: () => setEd({ pipe: idx + 1 }, r.company + ': ' + P.stages[idx + 1] + '.'),
+        canNotFit: key !== 'other' && !closed && idx < last,
+        notFit: () => setEd({ notFit: true }, r.company + ' marked as not a fit. A kind note was sent and the profile stays in the talent bank.')
+      });
+    });
+    const isPipe = st.view === 'wise' || st.view === 'oi' || st.view === 'other';
+    const PK = isPipe ? st.view : 'wise'; const PP = PIPES[PK];
+    const reqRows = reqAll.filter(r => r.key === PK);
+    const newCount = (k) => reqAll.filter(r => r.key === k && r.idx === 0 && !r.closed).length;
+    const stageCards = PP.stages.map((label, i) => ({ label, n: reqRows.filter(r => !r.closed && r.idx === i).length, hint: PP.hints[i], color: i === 0 ? 'var(--warning)' : (i === PP.stages.length - 1 ? 'var(--success)' : 'var(--brand-ink)') }));
+    // ---- Stopped and cancelled: one record per person, with the reason they gave
+    const S = (program, reason, name, email, company, filled, at, where) => ({ program, reason, name, email, company, filled, at: at + 'T12:00:00Z', where: where || 'Contact form' });
+    const STOP_SEED = [
+      S('WISE', 'Not sure this program fits me', 'Mariana S.', 'mariana@ondabio.com', 'OndaBio', 5, '2026-09-22'),
+      S('WISE', 'I’d rather talk to someone first', 'Valeria P.', 'valeria@solarix.com.ar', 'Solarix', 4, '2026-09-21'),
+      S('WISE', 'Not sure this program fits me', 'Florencia D.', 'flor.d@gmail.com', '', 3, '2026-09-20'),
+      S('WISE', 'Just exploring for now', '', '', '', 0, '2026-09-19'),
+      S('WISE', 'Not sure this program fits me', '', '', '', 0, '2026-09-18'),
+      S('WISE', 'The form asks for too much', 'Natalia G.', 'natalia@quimia.com', 'Quimia', 3, '2026-09-17'),
+      S('WISE', 'I’d rather talk to someone first', 'Agustina M.', 'agus.m@hotmail.com', '', 2, '2026-09-16'),
+      S('WISE', 'Just exploring for now', 'Belén T.', '', '', 1, '2026-09-14'),
+      S('WISE', 'Not sure this program fits me', 'Camila R.', 'camila@neurotrack.ar', 'NeuroTrack', 6, '2026-09-12'),
+      S('WISE', 'I’d rather talk to someone first', '', '', '', 0, '2026-09-10'),
+      S('Open Innovation', 'Not sure this program fits me', 'Gonzalo A.', 'gonzalo@logix.com.ar', 'Logix', 5, '2026-09-22'),
+      S('Open Innovation', 'Just exploring for now', 'Federico L.', 'fede@agrotrace.io', 'AgroTrace', 3, '2026-09-21'),
+      S('Open Innovation', 'I’ll come back later', 'Ignacio V.', 'ignacio@minerva-ai.com', 'Minerva AI', 6, '2026-09-19'),
+      S('Open Innovation', 'I’d rather talk to someone first', 'Pablo C.', 'pablo@hidrovia.com.ar', 'Hidrovía Tech', 4, '2026-09-18'),
+      S('Open Innovation', 'Just exploring for now', '', '', '', 0, '2026-09-15'),
+      S('Open Innovation', 'Not sure this program fits me', '', '', '', 0, '2026-09-13'),
+      S('Open Innovation', 'I’d rather talk to someone first', 'Sebastián K.', '', '', 1, '2026-09-11'),
+      S('Open Innovation', 'Just exploring for now', '', '', '', 0, '2026-09-08'),
+      S('Community', 'Just exploring for now', '', '', '', 0, '2026-09-20'),
+      S('Community', 'Just exploring for now', 'Joaquín B.', 'joaco.b@gmail.com', '', 2, '2026-09-17'),
+      S('IAE Hackathon', 'I’ll come back later', 'Martina O.', 'martina@fabrica.lat', 'Fábrica Lat', 4, '2026-09-15'),
+      S('IAE Hackathon', 'Just exploring for now', '', '', '', 0, '2026-09-09'),
+      S('Community', 'I’ll come back later', '', '', '', 0, '2026-09-07'),
+      S('NAVES', 'Not recorded (before the “I can’t continue” button)', 'Brújula team', '', 'Brújula', null, '2025-11-20', 'In training'),
+      S('NAVES', 'Not recorded (before the “I can’t continue” button)', 'Origen team', '', 'Origen', null, '2025-11-12', 'In training')
+    ].map((x, i) => Object.assign({ id: 'STOP-' + i }, x));
+    const liveStops = this.liveExits().map((x, i) => Object.assign({ id: x.id || ('LIVE-' + i), where: 'Contact form', live: true }, x));
+    const allStops = liveStops.slice().reverse().concat(STOP_SEED);
+    const stopKeyOf = (program) => program === 'NAVES' ? 'naves' : pipeKeyOf(program);
+    const reasonBars = (list) => {
+      const m = {}; list.forEach(x => { m[x.reason] = (m[x.reason] || 0) + 1; });
+      const l = Object.keys(m).map(k => ({ label: k, n: m[k] })).sort((a, b) => b.n - a.n);
+      const mx = Math.max(1, ...l.map(e => e.n));
+      return l.map(e => Object.assign(e, { pct: Math.round(e.n / mx * 100) + '%' }));
+    };
+    const exits = reasonBars(allStops.filter(x => stopKeyOf(x.program) === PK));
+    const SF = st.stopFilter || 'all';
+    const stopsShown = allStops.filter(x => SF === 'all' || stopKeyOf(x.program) === SF);
+    const stopRows = stopsShown.map(x => {
+      const followed = !!(st.followed || {})[x.id];
+      const contactBits = [x.company, x.email].filter(Boolean);
+      return {
+        who: x.name || 'Anonymous', nameColor: x.name ? 'var(--ink)' : 'var(--ink-muted)', fromSite: !!x.live,
+        contact: contactBits.length ? contactBits.join(' · ') : (x.name ? 'Only left a name' : 'Left before typing contact details'),
+        program: x.program, where: x.where,
+        progress: x.where === 'Contact form' ? (x.filled || 0) + ' of 7 fields filled' : 'NAVES · dropped out',
+        reason: x.reason, when: fmt(x.at),
+        canFollow: !!x.email, noContact: !x.email, followed,
+        followLabel: followed ? 'Follow-up sent ✓' : 'Follow up',
+        follow: () => this.setState({ followed: Object.assign({}, this.state.followed || {}, { [x.id]: true }), toast: 'Follow-up sent to ' + (x.name || x.email) + '.' })
+      };
+    });
+    const STOP_FILTERS = [['all', 'All programs'], ['naves', 'NAVES'], ['wise', 'WISE'], ['oi', 'Open Innovation'], ['other', 'Hackathon & Community']];
+    const stopChips = STOP_FILTERS.map(f => ({ label: f[1] + ' · ' + allStops.filter(x => f[0] === 'all' || stopKeyOf(x.program) === f[0]).length, pressed: SF === f[0] ? 'true' : 'false', pick: () => this.setState({ stopFilter: f[0] }) }));
+    const stopReasons = reasonBars(stopsShown);
+    const challenges = CHALLENGES.map(c => ({ label: c.label, desc: c.desc, n: reqAll.filter(r => r.key === 'oi' && r.challenge === c.label && !r.closed).length }));
+    const pp = Object.assign({}, PP, { isOi: !!PP.isOi, grid: 'repeat(' + PP.stages.length + ', minmax(0, 1fr))', exitTotal: exits.reduce((t, e) => t + e.n, 0), seeWho: () => this.setState({ view: 'stopped', stopFilter: PK, toast: '' }), slaNote: 'Reply promised on the website: within ' + PP.sla + ' working days.' });
+
+    const on = (keys) => keys.indexOf(st.view) >= 0;
+    const go = (view) => () => this.setState({ view, rejectOpen: false, toast: '' });
+    const bgOf = (active) => active ? 'var(--brand-soft)' : 'transparent';
+    const nAlertsHi = nAlerts;
+    const progNav = [
+      { label: 'NAVES', sub: 'Lucía · applications and training', count: nPending, countCls: 'ei-badge ei-badge--brand', bg: bgOf(on(['queue', 'eval', 'alerts'])), go: go('queue'), hasSubs: on(['queue', 'eval', 'alerts']),
+        subs: [
+          { label: 'Filter I queue', count: nPending, countCls: 'ei-badge ei-badge--brand', weight: on(['queue', 'eval']) ? 600 : 400, bg: bgOf(false), go: go('queue') },
+          { label: 'Drop-out alerts', count: nAlertsHi, countCls: 'ei-badge ei-badge--warning', weight: on(['alerts']) ? 600 : 400, bg: bgOf(false), go: go('alerts') }
+        ] },
+      { label: 'WISE', sub: 'Victoria · contact requests', count: newCount('wise'), countCls: 'ei-badge ei-badge--warning', bg: bgOf(on(['wise'])), go: go('wise'), hasSubs: false, subs: [] },
+      { label: 'Open Innovation', sub: 'Victoria · contact requests', count: newCount('oi'), countCls: 'ei-badge ei-badge--warning', bg: bgOf(on(['oi'])), go: go('oi'), hasSubs: false, subs: [] }
+    ];
+    const sharedNav = [
+      { label: 'Stopped & cancelled', sub: 'Who left, and why', count: allStops.length, countCls: 'ei-badge ei-badge--neutral', bg: bgOf(on(['stopped'])), go: () => this.setState({ view: 'stopped', stopFilter: 'all', toast: '' }) },
+      { label: 'Talent bank', sub: 'All programs', count: st.bank.length, countCls: 'ei-badge ei-badge--neutral', bg: bgOf(on(['bank'])), go: go('bank') },
+      { label: 'Hackathon & Community', sub: 'Lucía · contact requests', count: newCount('other'), countCls: 'ei-badge ei-badge--warning', bg: bgOf(on(['other'])), go: go('other') }
+    ];
+    const step = (v, d, lo, hi) => Math.min(hi, Math.max(lo, Math.round((v + d) * 100) / 100));
+
+    return {
+      v: { queue: st.view === 'queue', eval: st.view === 'eval', bank: st.view === 'bank', alerts: st.view === 'alerts', pipe: isPipe, stopped: st.view === 'stopped' },
+      stopRows, stopChips, stopReasons, noStops: stopRows.length === 0, stopTotal: stopsShown.length, stopReachable: stopsShown.filter(x => !!x.email).length,
+      reqRows, noReqs: reqRows.length === 0, stageCards, exits, challenges, pp,
+      progNav, sharedNav,
+      scrollRef: (el) => { this.scroller = el; },
+      toastOn: !!st.toast, toast: st.toast,
+      nApps: enriched.length, nPass: count('pass'), nBorder: count('border'), nBelow: count('below'),
+      passMark: st.passMark.toFixed(2), lowMark: st.lowMark.toFixed(2),
+      passUp: () => this.setState({ passMark: step(st.passMark, 0.25, st.lowMark + 0.25, 5) }),
+      passDown: () => this.setState({ passMark: step(st.passMark, -0.25, st.lowMark + 0.25, 5) }),
+      lowUp: () => this.setState({ lowMark: step(st.lowMark, 0.25, 1, st.passMark - 0.25) }),
+      lowDown: () => this.setState({ lowMark: step(st.lowMark, -0.25, 1, st.passMark - 0.25) }),
+      pendingPass: pendingPass.length, noPendingPass: pendingPass.length === 0,
+      pendingBelow: pendingBelow.length, noPendingBelow: pendingBelow.length === 0,
+      advanceAll: () => setStatus(pendingPass.map(a => a.id), 'advanced', toast(pendingPass.length + ' applications advanced to Filter II. Teams notified by email.')),
+      rejectAll: () => { let bank = this.state.bank; pendingBelow.forEach(a => { bank = toBank(a, bank); }); setStatus(pendingBelow.map(a => a.id), 'rejected', Object.assign({ bank }, toast(pendingBelow.length + ' teams received personalized feedback and were saved to the talent bank.'))); },
+      rows, sel,
+      goQueue: () => this.setState({ view: 'queue', rejectOpen: false }),
+      markBorder: () => setStatus([cur.id], 'review', Object.assign({ view: 'queue' }, toast(cur.name + ' sent to second review.'))),
+      advanceSel: () => setStatus([cur.id], 'advanced', Object.assign({ view: 'queue' }, toast(cur.name + ' advanced to Filter II.'))),
+      rejectOpen: st.rejectOpen,
+      openReject: () => this.setState({ rejectOpen: true }),
+      closeReject: () => this.setState({ rejectOpen: false }),
+      confirmReject: () => setStatus([cur.id], 'rejected', Object.assign({ view: 'queue', rejectOpen: false, bank: toBank(cur, this.state.bank) }, toast('Feedback sent to ' + cur.name + ' and profile saved to the talent bank.'))),
+      sectorChips, bankRows,
+      partnerBtn: st.partner ? 'Show all' : 'Find matches',
+      partnerBtnCls: st.partner ? 'ei-btn ei-btn--secondary' : 'ei-btn ei-btn--accent',
+      togglePartner: () => this.setState({ partner: !st.partner }),
+      alertRows, rules
+    };
+  }
+}
+</script>
+</body>
+</html>

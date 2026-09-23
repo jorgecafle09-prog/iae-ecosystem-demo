@@ -1,0 +1,15 @@
+{
+  "name": "emprendeiae-api",
+  "version": "1.0.0",
+  "description": "EmprendeIAE Ecosystem Hub API: registrations from the founders website, permanent person IDs, team endpoints.",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "seed": "node scripts/seed.js",
+    "test": "node scripts/test.js"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.2.2",
+    "@azure/functions": "^4.5.1",
+    "@azure/communication-email": "^1.0.0"
+  }
+}

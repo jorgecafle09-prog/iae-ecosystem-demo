@@ -1,2 +1,2 @@
-# EmprendeIAE Demo Mode
-Classroom-only integration. Uses browser localStorage, no API/database required. Upload the contents of `hub` to the existing repository `hub` folder. Keep the existing Azure workflow with app_location: hub.
+# EmprendeIAE Integrated Class Version
+Azure-hosted classroom prototype with application intake, Admin input, People Database, Data Warehouse, dashboard analytics and Entrepreneur Directory. Application data is stored in browser localStorage for the classroom prototype.

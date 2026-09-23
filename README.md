@@ -1,24 +1,12 @@
-# IAE Ecosystem Hub - Deployable Prototype
+# IAE Business School · Universidad Austral Ecosystem Prototype
 
-Static website package. No build step is required.
+Static prototype. No build step required.
 
-## Preview locally
+## Brand theme
+Uses the IAE Business School / Universidad Austral primary blue #1E22AA and white, with restrained institutional accents. Montserrat / Open Sans / Arial are used as practical web fallbacks.
 
-Run any static file server from this folder, for example:
+## Azure deployment
+Replace the existing root files in the GitHub repository with these files and commit. Azure Static Web Apps will redeploy automatically through the existing GitHub Actions workflow.
 
-```bash
-python -m http.server 8080
-```
-
-Then open `http://localhost:8080`.
-
-## Publish
-
-Upload the folder contents to any static website host (Azure Static Web Apps, GitHub Pages, Netlify, Vercel static hosting, etc.).
-
-## Important
-
-- Prototype data is anonymized / fictional sample data from the provided NAVES workbook.
-- The Admin Team toggle is a UI demo only. It is NOT real authentication.
-- Before using real participant data, implement authentication, role-based authorization, encryption, audit logs, and appropriate privacy/data retention controls.
-- Import Data is intentionally a placeholder in this package.
+## Security
+The Admin Team interface is a UI prototype, not authentication. Do not use real confidential participant data until authentication, authorization, auditing, and suitable privacy controls are implemented.

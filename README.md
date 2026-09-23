@@ -1,2 +1,3 @@
-# EmprendeIAE Ecosystem Full Classroom Version
-Preserves the pre-integration Ecosystem experience (directory, favorites, resources, capital/support, events, matching, admin metrics, freshness, programs, people database and raw data warehouse), adds founders application intake and browser Excel import.
+# Founders Website pre-submission update
+
+Replace only `hub/apply/` in your current full ecosystem package. Add/use the supplied `emprende-iae-logo.png` if your `hub` does not already contain the EmprendeIAE logo. This update preserves the Ecosystem and changes the Founders journey before final application submission.

@@ -1,3 +1,2 @@
-# Founders Website pre-submission update
-
-Replace only `hub/apply/` in your current full ecosystem package. Add/use the supplied `emprende-iae-logo.png` if your `hub` does not already contain the EmprendeIAE logo. This update preserves the Ecosystem and changes the Founders journey before final application submission.
+# EmprendeIAE Final Integrated Classroom Package
+Includes full Ecosystem, screenshot-based Founders pre-submission journey, Excel import, Admin AI Filter I, metrics, records, recommendations, resources, support and events. Replace the GitHub `hub` folder with this package `hub` folder. Existing `api` and workflow can remain.

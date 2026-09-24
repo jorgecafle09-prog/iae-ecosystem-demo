@@ -1,5 +1,5 @@
-# EmprendeIAE Final Integrated Classroom Package v2
+# EmprendeIAE current Hub + integrated analytics
 
-Includes full Ecosystem, Founders pre-submission journey, Excel import, AI Filter I, robust EmprendeIAE header branding, and Test Data Management controls.
+Built directly from the current app.js, data.js, index.html, styles.css and staticwebapp.config.json supplied in this conversation. Adds analytics to Admin Dashboard while preserving AI Filter I, Excel Input, Test Data controls, records, matching, resources and events.
 
-Admin > Test Data supports deleting all website applicants, restarting the Founders application flow, and restoring the original 24 NAVES records. Registrations also include an individual Delete action for website test applicants.
+To deploy, replace these files inside the existing GitHub `hub` folder. Keep the existing `hub/apply/` folder if it is newer and not included here.
